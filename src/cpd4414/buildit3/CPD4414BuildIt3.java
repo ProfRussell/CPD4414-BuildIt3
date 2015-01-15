@@ -16,6 +16,9 @@
 package cpd4414.buildit3;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -94,6 +97,106 @@ public class CPD4414BuildIt3 {
     }
     
     public static void doCRUDExample() {
+        try {            
+            Connection conn = getConnection();
+            // Our Dataset
+            List<Person> people = new ArrayList<>();
+            people.add(new Person("John", 32));
+            people.add(new Person("Frank", 29));
+            people.add(new Person("Susie", 37));            
+            
+            // Create!
+            String query = "INSERT INTO sample (name, age) VALUES (?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            System.out.println(query);
+            for (Person person : people) {
+                pstmt.setString(1, person.getName());
+                pstmt.setInt(2, person.getAge());
+                int updates = pstmt.executeUpdate();
+                System.out.printf("Updated %d rows with %s/%d.\n", updates, 
+                        person.getName(), person.getAge());                
+            }
+            
+            // Read!
+            query = "SELECT * FROM sample";        
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            System.out.println(query);
+            while (rs.next()) {
+                System.out.printf("%s\t%s\n", rs.getString("name"), rs.getString("age"));
+            }        
+            
+            // Update!
+            query = "UPDATE sample SET age = ? WHERE name = ?";
+            pstmt = conn.prepareStatement(query);
+            System.out.println(query);
+            for (Person person : people) {
+                pstmt.setInt(1, person.getAge() + 1);
+                pstmt.setString(2, person.getName());                
+                int updates = pstmt.executeUpdate();
+                System.out.printf("Updated %d rows with %s/%d.\n", updates, 
+                        person.getName(), person.getAge());                
+            }
+            
+            // Read Again!
+            query = "SELECT * FROM sample";        
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+            System.out.println(query);
+            while (rs.next()) {
+                System.out.printf("%s\t%s\n", rs.getString("name"), rs.getString("age"));
+            }
+            
+            // DELETE!
+            query = "DELETE FROM sample WHERE name = ?";
+            pstmt = conn.prepareStatement(query);
+            System.out.println(query);
+            for (Person person : people) {
+                pstmt.setString(1, person.getName());
+                int updates = pstmt.executeUpdate();
+                System.out.printf("Updated %d rows with %s.\n", updates, 
+                        person.getName());                
+            }
+            
+            // Read Again!
+            query = "SELECT * FROM sample";        
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery(query);
+            System.out.println(query);
+            while (rs.next()) {
+                System.out.printf("%s\t%s\n", rs.getString("name"), rs.getString("age"));
+            }
+            
+            conn.close();
+        } catch (SQLException e) {
+            System.err.println("Error with SQL: " + e.getMessage());
+        }  
+    }
+    
+    private static class Person {
+        private String name;
+        private int age;
+
+        public Person(String name, int age) {
+            this.name = name;
+            this.age = age;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getAge() {
+            return age;
+        }
+
+        public void setAge(int age) {
+            this.age = age;
+        }
         
     }
 
