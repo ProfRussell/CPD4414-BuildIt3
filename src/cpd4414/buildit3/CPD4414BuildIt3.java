@@ -75,7 +75,22 @@ public class CPD4414BuildIt3 {
     }
     
     public static void doPreparedStatement() {
-              
+        try {            
+            Connection conn = getConnection();
+            String query = "SELECT * FROM sample WHERE id = ?";        
+            PreparedStatement pstmt = conn.prepareStatement(query);
+            int[] idList = {1, 3};
+            for (int id : idList) {
+                pstmt.setInt(1, id);
+                ResultSet rs = pstmt.executeQuery();
+                while (rs.next()) {
+                    System.out.printf("%s\t%s\n", rs.getString("name"), rs.getString("age"));
+                }        
+            }
+            conn.close();
+        } catch (SQLException e) {
+            System.err.println("Error SELECTing: " + e.getMessage());
+        }         
     }
     
     public static void doCRUDExample() {
