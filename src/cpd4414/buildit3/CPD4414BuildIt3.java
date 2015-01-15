@@ -60,11 +60,22 @@ public class CPD4414BuildIt3 {
     }
     
     public static void doStatement() {
-        
+        try {            
+            Connection conn = getConnection();
+            String query = "SELECT * FROM sample";        
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                System.out.printf("%s\t%s\n", rs.getString("name"), rs.getString("age"));
+            }        
+            conn.close();
+        } catch (SQLException e) {
+            System.err.println("Error SELECTing: " + e.getMessage());
+        }         
     }
     
     public static void doPreparedStatement() {
-        
+              
     }
     
     public static void doCRUDExample() {
